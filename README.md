@@ -11,10 +11,12 @@
 - **🎯 Dynamic Skill Gap Assessment**: Compares your listed profile competencies against standard requirements for target roles (e.g., Frontend, Backend, Full Stack, Software Engineer, Data Analyst) and charts missing technologies.
 - **🗺️ Interactive Timeline Career Roadmap**: Generates a step-by-step career path checklist optimized for the student's selected target role.
 - **🏢 Company Readiness Checker**: Gauges preparation index against specific requirements for corporate partners (Google, Amazon, Microsoft, JPMC, TCS, Infosys) detailing matched vs. missing skills.
-- **📚 Study Resource Hub**: A centralized repository containing curated placement preparation material (DSA, DBMS, Networks, OS, Aptitude) filterable by difficulty and category.
+- **📚 Study Resource Hub**: A centralized repository containing curated placement preparation material (DSA, DBMS, Networks, OS, OOP, Web Development, Interview Prep) filterable by difficulty and category.
 - **📅 Weekly Goal Tracker**: A Kanban board and list tracker helping students create, manage, and complete priority goals for recruitment readiness.
 - **📄 Resume Checklist Module**: Auto-validating and manual resume checklist scores with completion ring graphs to make resumes campus placement-ready.
+- **📈 Advanced Analytics Dashboard**: Visualizes placement preparation metrics, weekly progress trends, DSA topic competence radar charts, required skills mapping, and goal counts with dynamic recommendations using **Recharts**.
 - **🛡️ Admin Management Panel**: Role-protected analytics dashboard containing user directories, student performance averages, resource aggregation indexes, and user deletion tools.
+- **🔑 Separate Admin Login & Auto-Seeding**: Custom-styled secure gateway for admin accounts. Includes automatic database credentials checking and seeding logic (`admin@skillbridge.edu` / `adminpassword123`).
 - **💫 Modern Glassmorphic SaaS UI**: Styled with responsive, glassmorphic dashboards, smooth active transitions, entry animations, glowing loading skeletons, and interactive floating toast notifications.
 
 ---

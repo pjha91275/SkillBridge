@@ -16,10 +16,12 @@ import {
   BookOpen,
   CheckSquare,
   FileText,
+  TrendingUp,
 } from 'lucide-react';
 
 const sidebarItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Advanced Analytics', href: '/dashboard/analytics', icon: TrendingUp },
   { name: 'Profile', href: '/dashboard/profile', icon: User },
   { name: 'Readiness Score', href: '/dashboard/readiness', icon: Award },
   { name: 'Skill Gap', href: '/dashboard/skill-gap', icon: Zap },
