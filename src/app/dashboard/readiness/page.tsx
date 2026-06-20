@@ -21,11 +21,11 @@ import {
 import Link from "next/link";
 
 const ROLE_SKILLS: Record<string, string[]> = {
-  'Frontend Developer': ['React', 'HTML', 'CSS', 'JavaScript', 'Tailwind CSS', 'TypeScript', 'Next.js'],
+  'Frontend Developer': ['HTML', 'CSS', 'JavaScript', 'React', 'Git'],
   'Backend Developer': ['Node.js', 'Express', 'MongoDB', 'SQL', 'DBMS', 'Docker', 'Git'],
-  'Full Stack Developer': ['React', 'Node.js', 'MongoDB', 'DBMS', 'SQL', 'Tailwind CSS', 'TypeScript'],
+  'Full Stack Developer': ['React', 'Node.js', 'MongoDB', 'DBMS', 'SQL', 'Git', 'Tailwind CSS'],
   'Software Engineer': ['Data Structures', 'Algorithms', 'DBMS', 'Java', 'Python', 'System Design', 'Git'],
-  'Data Analyst': ['Python', 'SQL', 'Excel', 'Tableau', 'Statistics', 'Pandas', 'PowerBI'],
+  'Data Analyst': ['Python', 'SQL', 'Excel', 'Tableau', 'Statistics', 'Pandas', 'Git'],
 };
 
 export default async function ReadinessScorePage() {
