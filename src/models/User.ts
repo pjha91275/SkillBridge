@@ -29,6 +29,11 @@ const UserSchema = new Schema(
       type: Number,
       required: [true, 'Please provide a graduation year'],
     },
+    role: {
+      type: String,
+      enum: ['student', 'admin'],
+      default: 'student',
+    },
   },
   {
     timestamps: true,

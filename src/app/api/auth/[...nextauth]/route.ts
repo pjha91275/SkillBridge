@@ -38,6 +38,7 @@ export const authOptions: AuthOptions = {
           college: user.college,
           branch: user.branch,
           graduationYear: user.graduationYear,
+          role: user.role || 'student',
         };
       },
     }),
@@ -49,6 +50,7 @@ export const authOptions: AuthOptions = {
         token.college = user.college;
         token.branch = user.branch;
         token.graduationYear = user.graduationYear;
+        token.role = user.role || 'student';
       }
       return token;
     },
@@ -58,6 +60,7 @@ export const authOptions: AuthOptions = {
         session.user.college = token.college;
         session.user.branch = token.branch;
         session.user.graduationYear = token.graduationYear;
+        session.user.role = token.role || 'student';
       }
       return session;
     },

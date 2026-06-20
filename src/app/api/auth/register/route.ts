@@ -36,6 +36,9 @@ export async function POST(req: Request) {
     // Hash Password
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Determine user role
+    const isAdminEmail = email.toLowerCase().includes('admin@');
+
     // Create User
     const newUser = new User({
       name,
@@ -44,6 +47,7 @@ export async function POST(req: Request) {
       college,
       branch,
       graduationYear: Number(graduationYear),
+      role: isAdminEmail ? 'admin' : 'student',
     });
 
     await newUser.save();

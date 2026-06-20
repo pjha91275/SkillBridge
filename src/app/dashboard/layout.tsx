@@ -13,6 +13,9 @@ import {
   Settings,
   Menu,
   X,
+  BookOpen,
+  CheckSquare,
+  FileText,
 } from 'lucide-react';
 
 const sidebarItems = [
@@ -22,6 +25,9 @@ const sidebarItems = [
   { name: 'Skill Gap', href: '/dashboard/skill-gap', icon: Zap },
   { name: 'Roadmap', href: '/dashboard/roadmap', icon: Map },
   { name: 'Company Readiness', href: '/dashboard/company-readiness', icon: Building2 },
+  { name: 'Study Resources', href: '/dashboard/resources', icon: BookOpen },
+  { name: 'Weekly Goals', href: '/dashboard/goals', icon: CheckSquare },
+  { name: 'Resume Checklist', href: '/dashboard/resume', icon: FileText },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 

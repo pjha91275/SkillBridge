@@ -7,6 +7,7 @@ declare module "next-auth" {
       college: string;
       branch: string;
       graduationYear: number;
+      role: string;
     } & DefaultSession["user"]
   }
 
@@ -15,5 +16,6 @@ declare module "next-auth" {
     college: string;
     branch: string;
     graduationYear: number;
+    role: string;
   }
 }

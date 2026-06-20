@@ -4,6 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Profile from "@/models/Profile";
 import User from "@/models/User";
+import Goal from "@/models/Goal";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ import {
   Briefcase,
   Layers,
   FileCode,
+  CheckSquare,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -68,6 +70,13 @@ export default async function DashboardPage() {
     projects: [],
     dsaProgress: 0,
   };
+
+  // Fetch goals
+  const goals = await Goal.find({ userId });
+  const totalGoals = goals.length;
+  const completedGoals = goals.filter((g) => g.status === 'Completed').length;
+  const pendingGoals = goals.filter((g) => g.status === 'Pending' || g.status === 'In Progress').length;
+  const goalsCompletionRate = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
 
   const userSkillsLower = (profile.skills || []).map((s: string) => s.toLowerCase().trim());
   const targetRole = profile.targetRole || '';
@@ -366,7 +375,7 @@ export default async function DashboardPage() {
 
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             
             {/* 3. Skill Gaps */}
             <Card className="glass-panel border border-white/5 bg-slate-900/20 shadow-xl p-6 h-64 flex flex-col justify-between">
@@ -442,6 +451,48 @@ export default async function DashboardPage() {
               <div className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 cursor-pointer transition-colors justify-end">
                 <Link href="/dashboard/roadmap" className="flex items-center gap-1">
                   Open roadmap timeline
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </Card>
+
+            {/* 5. Weekly Goal Tracker Widget */}
+            <Card className="glass-panel border border-white/5 bg-slate-900/20 shadow-xl p-6 h-64 flex flex-col justify-between">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <CheckSquare className="h-5 w-5 text-indigo-400" />
+                    Weekly Goals
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1">Track career preparation milestones.</p>
+                </div>
+                {totalGoals > 0 && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">
+                    {goalsCompletionRate}% Done
+                  </span>
+                )}
+              </div>
+
+              <div className="flex-1 flex flex-col justify-center my-3 space-y-2">
+                <div className="flex justify-between items-center text-xs text-slate-400">
+                  <span className="font-semibold">Status Progress</span>
+                  <span className="text-white font-bold">{completedGoals} / {totalGoals} Goals</span>
+                </div>
+                <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-violet-600 to-indigo-600 h-full rounded-full transition-all duration-300"
+                    style={{ width: `${goalsCompletionRate}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-[10px] text-slate-500 font-bold pt-1.5 border-t border-white/2">
+                  <span>Pending: {pendingGoals}</span>
+                  <span>Completed: {completedGoals}</span>
+                </div>
+              </div>
+
+              <div className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 cursor-pointer transition-colors justify-end">
+                <Link href="/dashboard/goals" className="flex items-center gap-1">
+                  Manage weekly goals
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>

@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import User from '@/models/User';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -15,6 +17,28 @@ let cached = (global as any).mongoose;
 
 if (!cached) {
   cached = (global as any).mongoose = { conn: null, promise: null };
+}
+
+async function seedAdmin() {
+  try {
+    const adminEmail = 'admin@skillbridge.edu';
+    const adminExists = await User.findOne({ email: adminEmail });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash('adminpassword123', 10);
+      await User.create({
+        name: 'System Administrator',
+        email: adminEmail,
+        password: hashedPassword,
+        college: 'SkillBridge HQ',
+        branch: 'Administration',
+        graduationYear: 2026,
+        role: 'admin',
+      });
+      console.log('Seeded default admin user successfully.');
+    }
+  } catch (err) {
+    console.error('Failed to seed default admin:', err);
+  }
 }
 
 async function dbConnect() {
@@ -34,6 +58,8 @@ async function dbConnect() {
 
   try {
     cached.conn = await cached.promise;
+    // Run seeding
+    await seedAdmin();
   } catch (e) {
     cached.promise = null;
     throw e;
@@ -43,3 +69,4 @@ async function dbConnect() {
 }
 
 export default dbConnect;
+

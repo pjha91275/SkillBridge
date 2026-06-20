@@ -36,6 +36,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className
         )}
         ref={ref}
+        suppressHydrationWarning={true}
         {...props}
       />
     )
