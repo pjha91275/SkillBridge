@@ -17,6 +17,7 @@ export async function POST(req) {
 
     const {
       name,
+      email,
       college,
       branch,
       cgpa,
@@ -32,6 +33,7 @@ export async function POST(req) {
     // 1. Update User Collection
     const userUpdate = {};
     if (name) userUpdate.name = name;
+    if (email) userUpdate.email = email;
     if (college) userUpdate.college = college;
     if (branch) userUpdate.branch = branch;
 

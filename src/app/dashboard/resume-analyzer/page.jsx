@@ -60,7 +60,7 @@ export default function ResumeAnalyzerPage() {
   const [showReviewScreen, setShowReviewScreen] = useState(false);
   const [syncData, setSyncData] = useState({ user: null, profile: null });
   const [syncSelections, setSyncSelections] = useState({
-    name: true, college: true, branch: true, githubUrl: true, linkedinUrl: true, skills: true, certifications: true, projects: true
+    name: true, email: true, college: true, branch: true, githubUrl: true, linkedinUrl: true, skills: true, certifications: true, projects: true
   });
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -403,6 +403,7 @@ ${hasLinkedin ? '✓' : '✗'} LinkedIn
     try {
       const payload = {};
       if (syncSelections.name) payload.name = analysis.parsedData.name;
+      if (syncSelections.email) payload.email = analysis.parsedData.email;
       if (syncSelections.college && analysis.parsedData.education[0]) payload.college = analysis.parsedData.education[0].split(',')[0] || '';
       if (syncSelections.branch && analysis.parsedData.education[0]) payload.branch = analysis.parsedData.education[0].split(',')[1] || '';
       if (syncSelections.githubUrl) payload.githubUrl = analysis.parsedData.github;
@@ -419,8 +420,43 @@ ${hasLinkedin ? '✓' : '✗'} LinkedIn
       if (!res.ok) throw new Error("Sync failed");
       
       setShowReviewScreen(false);
-      showToast("Profile synchronized successfully!", "success");
+      showToast("Selected profile updates synchronized successfully!", "success");
       router.refresh();
+      fetchAnalysis();
+    } catch (err) {
+      showToast(err.message, "error");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const acceptAllAndSync = async () => {
+    setIsSyncing(true);
+    try {
+      const payload = {};
+      payload.name = analysis.parsedData.name;
+      payload.email = analysis.parsedData.email;
+      if (analysis.parsedData.education[0]) {
+        payload.college = analysis.parsedData.education[0].split(',')[0] || '';
+        payload.branch = analysis.parsedData.education[0].split(',')[1] || '';
+      }
+      payload.githubUrl = analysis.parsedData.github;
+      payload.linkedinUrl = analysis.parsedData.linkedin;
+      payload.skills = analysis.parsedData.skills;
+      payload.certifications = analysis.parsedData.certifications;
+      payload.projects = analysis.parsedData.projects;
+
+      const res = await fetch("/api/resume-analyzer/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error("Sync failed");
+      
+      setShowReviewScreen(false);
+      showToast("All resume updates synchronized successfully!", "success");
+      router.refresh();
+      fetchAnalysis();
     } catch (err) {
       showToast(err.message, "error");
     } finally {
@@ -430,7 +466,7 @@ ${hasLinkedin ? '✓' : '✗'} LinkedIn
 
   const toggleSelection = (key) => setSyncSelections(prev => ({ ...prev, [key]: !prev[key] }));
   const toggleAll = (val) => setSyncSelections({
-    name: val, college: val, branch: val, githubUrl: val, linkedinUrl: val, skills: val, certifications: val, projects: val
+    name: val, email: val, college: val, branch: val, githubUrl: val, linkedinUrl: val, skills: val, certifications: val, projects: val
   });
 
   const getPriorityColor = (priority) => {
@@ -965,8 +1001,6 @@ ${hasLinkedin ? '✓' : '✗'} LinkedIn
           )}
         </Card>
 
-        </Card>
-
         {/* REVIEW SCREEN */}
         {showReviewScreen && analysis && (
           <Card className="glass-panel p-6 md:p-8 animate-slide-up border-indigo-500/30">
@@ -977,7 +1011,7 @@ ${hasLinkedin ? '✓' : '✗'} LinkedIn
                   Review Profile Updates
                 </h2>
                 <p className="text-sm text-slate-400 mt-1">
-                  We've extracted information from your resume. Select the details you'd like to sync to your SkillBridge profile.
+                  Compare your current SkillBridge profile details against the extracted resume data. Select which elements to synchronize.
                 </p>
               </div>
               <div className="flex gap-2">
@@ -988,112 +1022,380 @@ ${hasLinkedin ? '✓' : '✗'} LinkedIn
 
             <div className="mt-8 space-y-6">
               {/* Compare Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
-                {/* Basic Details */}
-                <div className="space-y-4 p-5 bg-slate-900/30 rounded-xl border border-white/5 relative">
-                  <div className="absolute top-4 right-4 flex items-center gap-2">
-                    <input type="checkbox" checked={syncSelections.name} onChange={() => toggleSelection('name')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
-                  </div>
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
-                    <User className="h-4 w-4 text-indigo-400" /> Basic Details
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500">Name</span>
-                      <div className="text-right">
-                        <div className="text-xs text-slate-400 line-through">{syncData.user?.name || 'Empty'}</div>
-                        <div className="text-sm font-bold text-emerald-400">{analysis.parsedData.name || 'Not Found'}</div>
+                {/* 1. Name */}
+                {(() => {
+                  const currentVal = syncData.user?.name || 'Empty';
+                  const newVal = analysis.parsedData.name || 'Not Found';
+                  const isDiff = currentVal !== newVal;
+                  return (
+                    <div className={`space-y-4 p-5 bg-slate-900/30 rounded-xl border relative transition-all ${
+                      isDiff ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                    }`}>
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <input type="checkbox" checked={syncSelections.name} onChange={() => toggleSelection('name')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <User className="h-4 w-4 text-indigo-400" /> Full Name
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ml-auto mr-8 ${
+                          isDiff ? 'bg-amber-500/10 text-amber-400' : 'bg-slate-800 text-slate-500'
+                        }`}>
+                          {isDiff ? 'New Value' : 'No Change'}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-500 font-bold block mb-1">Current Profile</span>
+                          <span className="text-slate-400 font-medium break-all">{currentVal}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 font-bold block mb-1">Extracted Resume</span>
+                          <span className={`font-bold break-all ${isDiff ? 'text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded' : 'text-slate-300'}`}>{newVal}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
-                {/* Social Links */}
-                <div className="space-y-4 p-5 bg-slate-900/30 rounded-xl border border-white/5 relative">
-                  <div className="absolute top-4 right-4 flex items-center gap-2">
-                    <input type="checkbox" checked={syncSelections.githubUrl} onChange={() => toggleSelection('githubUrl')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
-                  </div>
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
-                    <Github className="h-4 w-4 text-indigo-400" /> Social Links
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500">GitHub</span>
-                      <div className="text-right">
-                        <div className="text-xs text-slate-400 line-through truncate max-w-[150px]">{syncData.profile?.githubUrl || 'Empty'}</div>
-                        <div className="text-sm font-bold text-emerald-400 truncate max-w-[150px]">{analysis.parsedData.github || 'Not Found'}</div>
+                {/* 2. Email */}
+                {(() => {
+                  const currentVal = syncData.user?.email || 'Empty';
+                  const newVal = analysis.parsedData.email || 'Not Found';
+                  const isDiff = currentVal.toLowerCase() !== newVal.toLowerCase();
+                  return (
+                    <div className={`space-y-4 p-5 bg-slate-900/30 rounded-xl border relative transition-all ${
+                      isDiff ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                    }`}>
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <input type="checkbox" checked={syncSelections.email} onChange={() => toggleSelection('email')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <Mail className="h-4 w-4 text-indigo-400" /> Email Address
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ml-auto mr-8 ${
+                          isDiff ? 'bg-amber-500/10 text-amber-400' : 'bg-slate-800 text-slate-500'
+                        }`}>
+                          {isDiff ? 'New Value' : 'No Change'}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-500 font-bold block mb-1">Current Profile</span>
+                          <span className="text-slate-400 font-medium break-all">{currentVal}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 font-bold block mb-1">Extracted Resume</span>
+                          <span className={`font-bold break-all ${isDiff ? 'text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded' : 'text-slate-300'}`}>{newVal}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
-                {/* Skills */}
-                <div className="space-y-4 p-5 bg-slate-900/30 rounded-xl border border-white/5 relative md:col-span-2">
-                  <div className="absolute top-4 right-4 flex items-center gap-2">
-                    <input type="checkbox" checked={syncSelections.skills} onChange={() => toggleSelection('skills')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
-                  </div>
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
-                    <Layers className="h-4 w-4 text-indigo-400" /> Skills
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-[10px] text-slate-500 uppercase font-bold block mb-2">Current Profile</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {syncData.profile?.skills?.map(s => (
-                          <span key={s} className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400">{s}</span>
-                        )) || <span className="text-xs text-slate-500 italic">None</span>}
+                {/* 3. College (Education) */}
+                {(() => {
+                  const currentVal = syncData.user?.college || 'Empty';
+                  const newVal = analysis.parsedData.education?.[0]?.split(',')?.[0]?.trim() || 'Not Found';
+                  const isDiff = currentVal !== newVal;
+                  return (
+                    <div className={`space-y-4 p-5 bg-slate-900/30 rounded-xl border relative transition-all ${
+                      isDiff ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                    }`}>
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <input type="checkbox" checked={syncSelections.college} onChange={() => toggleSelection('college')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <BookOpen className="h-4 w-4 text-indigo-400" /> College
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ml-auto mr-8 ${
+                          isDiff ? 'bg-amber-500/10 text-amber-400' : 'bg-slate-800 text-slate-500'
+                        }`}>
+                          {isDiff ? 'New Value' : 'No Change'}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-500 font-bold block mb-1">Current Profile</span>
+                          <span className="text-slate-400 font-medium break-all">{currentVal}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 font-bold block mb-1">Extracted Resume</span>
+                          <span className={`font-bold break-all ${isDiff ? 'text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded' : 'text-slate-300'}`}>{newVal}</span>
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <span className="text-[10px] text-emerald-500 uppercase font-bold block mb-2">To Merge</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {analysis.parsedData.skills?.map(s => (
-                          <span key={s} className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">{s}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Projects & Certifications */}
-                <div className="space-y-4 p-5 bg-slate-900/30 rounded-xl border border-white/5 relative">
-                  <div className="absolute top-4 right-4 flex items-center gap-2">
-                    <input type="checkbox" checked={syncSelections.projects} onChange={() => toggleSelection('projects')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
-                  </div>
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
-                    <Code className="h-4 w-4 text-indigo-400" /> Projects
-                  </h3>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Current: {syncData.profile?.projects?.length || 0}</span>
-                    <span className="text-emerald-400 font-bold">+ {analysis.parsedData.projects?.length || 0} to merge</span>
-                  </div>
-                </div>
+                  );
+                })()}
 
-                <div className="space-y-4 p-5 bg-slate-900/30 rounded-xl border border-white/5 relative">
-                  <div className="absolute top-4 right-4 flex items-center gap-2">
-                    <input type="checkbox" checked={syncSelections.certifications} onChange={() => toggleSelection('certifications')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
-                  </div>
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
-                    <Award className="h-4 w-4 text-indigo-400" /> Certifications
-                  </h3>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Current: {syncData.profile?.certifications?.length || 0}</span>
-                    <span className="text-emerald-400 font-bold">+ {analysis.parsedData.certifications?.length || 0} to merge</span>
-                  </div>
-                </div>
+                {/* 4. Branch (Education) */}
+                {(() => {
+                  const currentVal = syncData.user?.branch || 'Empty';
+                  const newVal = analysis.parsedData.education?.[0]?.split(',')?.[1]?.trim() || 'Not Found';
+                  const isDiff = currentVal !== newVal;
+                  return (
+                    <div className={`space-y-4 p-5 bg-slate-900/30 rounded-xl border relative transition-all ${
+                      isDiff ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                    }`}>
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <input type="checkbox" checked={syncSelections.branch} onChange={() => toggleSelection('branch')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <BookOpen className="h-4 w-4 text-indigo-400" /> Branch of Study
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ml-auto mr-8 ${
+                          isDiff ? 'bg-amber-500/10 text-amber-400' : 'bg-slate-800 text-slate-500'
+                        }`}>
+                          {isDiff ? 'New Value' : 'No Change'}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-500 font-bold block mb-1">Current Profile</span>
+                          <span className="text-slate-400 font-medium break-all">{currentVal}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 font-bold block mb-1">Extracted Resume</span>
+                          <span className={`font-bold break-all ${isDiff ? 'text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded' : 'text-slate-300'}`}>{newVal}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 5. GitHub URL */}
+                {(() => {
+                  const currentVal = syncData.profile?.githubUrl || 'Empty';
+                  const newVal = analysis.parsedData.github || 'Not Found';
+                  const isDiff = currentVal !== newVal;
+                  return (
+                    <div className={`space-y-4 p-5 bg-slate-900/30 rounded-xl border relative transition-all ${
+                      isDiff ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                    }`}>
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <input type="checkbox" checked={syncSelections.githubUrl} onChange={() => toggleSelection('githubUrl')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <Github className="h-4 w-4 text-indigo-400" /> GitHub URL
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ml-auto mr-8 ${
+                          isDiff ? 'bg-amber-500/10 text-amber-400' : 'bg-slate-800 text-slate-500'
+                        }`}>
+                          {isDiff ? 'New Value' : 'No Change'}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-500 font-bold block mb-1">Current Profile</span>
+                          <span className="text-slate-400 font-medium block max-w-[170px] truncate">{currentVal}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 font-bold block mb-1">Extracted Resume</span>
+                          <span className={`font-bold block max-w-[170px] truncate ${isDiff ? 'text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded' : 'text-slate-300'}`}>{newVal}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 6. LinkedIn URL */}
+                {(() => {
+                  const currentVal = syncData.profile?.linkedinUrl || 'Empty';
+                  const newVal = analysis.parsedData.linkedin || 'Not Found';
+                  const isDiff = currentVal !== newVal;
+                  return (
+                    <div className={`space-y-4 p-5 bg-slate-900/30 rounded-xl border relative transition-all ${
+                      isDiff ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                    }`}>
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <input type="checkbox" checked={syncSelections.linkedinUrl} onChange={() => toggleSelection('linkedinUrl')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <Linkedin className="h-4 w-4 text-indigo-400" /> LinkedIn URL
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ml-auto mr-8 ${
+                          isDiff ? 'bg-amber-500/10 text-amber-400' : 'bg-slate-800 text-slate-500'
+                        }`}>
+                          {isDiff ? 'New Value' : 'No Change'}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-500 font-bold block mb-1">Current Profile</span>
+                          <span className="text-slate-400 font-medium block max-w-[170px] truncate">{currentVal}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 font-bold block mb-1">Extracted Resume</span>
+                          <span className={`font-bold block max-w-[170px] truncate ${isDiff ? 'text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded' : 'text-slate-300'}`}>{newVal}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 7. Skills */}
+                {(() => {
+                  const currentVal = syncData.profile?.skills || [];
+                  const newVal = analysis.parsedData.skills || [];
+                  const newSkills = newVal.filter(s => !currentVal.map(curr => curr.toLowerCase().trim()).includes(s.toLowerCase().trim()));
+                  const isDiff = newSkills.length > 0;
+                  return (
+                    <div className={`space-y-4 p-5 bg-slate-900/30 rounded-xl border relative md:col-span-2 transition-all ${
+                      isDiff ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                    }`}>
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <input type="checkbox" checked={syncSelections.skills} onChange={() => toggleSelection('skills')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <Layers className="h-4 w-4 text-indigo-400" /> Skills
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ml-auto mr-8 ${
+                          isDiff ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-500'
+                        }`}>
+                          {isDiff ? `+${newSkills.length} New Skills` : 'All Synced'}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-500 font-bold block mb-2">Current Profile ({currentVal.length})</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {currentVal.map(s => (
+                              <span key={s} className="text-[10px] px-2 py-0.5 rounded bg-slate-800/80 text-slate-400">{s}</span>
+                            ))}
+                            {currentVal.length === 0 && <span className="text-xs text-slate-500 italic">None</span>}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 font-bold block mb-2">Extracted Resume ({newVal.length})</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {newVal.map(s => {
+                              const isNew = newSkills.includes(s);
+                              return (
+                                <span key={s} className={`text-[10px] px-2 py-0.5 rounded border transition-all ${
+                                  isNew ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 font-bold' : 'bg-slate-800/60 text-slate-400 border-transparent'
+                                }`}>
+                                  {s}
+                                </span>
+                              );
+                            })}
+                            {newVal.length === 0 && <span className="text-xs text-slate-500 italic">None</span>}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 8. Projects */}
+                {(() => {
+                  const currentVal = syncData.profile?.projects || [];
+                  const newVal = analysis.parsedData.projects || [];
+                  const newProjects = newVal.filter(p => !currentVal.map(curr => curr.title.toLowerCase().trim()).includes(p.title.toLowerCase().trim()));
+                  const isDiff = newProjects.length > 0;
+                  return (
+                    <div className={`space-y-4 p-5 bg-slate-900/30 rounded-xl border relative transition-all ${
+                      isDiff ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                    }`}>
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <input type="checkbox" checked={syncSelections.projects} onChange={() => toggleSelection('projects')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <Code className="h-4 w-4 text-indigo-400" /> Projects
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ml-auto mr-8 ${
+                          isDiff ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-500'
+                        }`}>
+                          {isDiff ? `+${newProjects.length} New` : 'All Synced'}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-500 font-bold block mb-1">Current Profile ({currentVal.length})</span>
+                          <ul className="space-y-1 text-slate-400 font-medium list-disc pl-4">
+                            {currentVal.slice(0, 3).map((p, idx) => <li key={idx} className="truncate max-w-[130px]">{p.title}</li>)}
+                            {currentVal.length > 3 && <li className="text-[10px] text-slate-500">+{currentVal.length - 3} more</li>}
+                            {currentVal.length === 0 && <span className="text-xs text-slate-500 italic block pl-0 list-none">None</span>}
+                          </ul>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 font-bold block mb-1">Extracted Resume ({newVal.length})</span>
+                          <ul className="space-y-1 list-disc pl-4">
+                            {newVal.slice(0, 3).map((p, idx) => {
+                              const isNew = newProjects.some(np => np.title === p.title);
+                              return (
+                                <li key={idx} className={`truncate max-w-[130px] ${isNew ? 'text-emerald-400 font-bold' : 'text-slate-300'}`}>
+                                  {p.title}
+                                </li>
+                              );
+                            })}
+                            {newVal.length > 3 && <li className="text-[10px] text-slate-500">+{newVal.length - 3} more</li>}
+                            {newVal.length === 0 && <span className="text-xs text-slate-500 italic block pl-0 list-none font-medium">None</span>}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 9. Certifications */}
+                {(() => {
+                  const currentVal = syncData.profile?.certifications || [];
+                  const newVal = analysis.parsedData.certifications || [];
+                  const newCerts = newVal.filter(c => !currentVal.map(curr => curr.toLowerCase().trim()).includes(c.toLowerCase().trim()));
+                  const isDiff = newCerts.length > 0;
+                  return (
+                    <div className={`space-y-4 p-5 bg-slate-900/30 rounded-xl border relative transition-all ${
+                      isDiff ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                    }`}>
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <input type="checkbox" checked={syncSelections.certifications} onChange={() => toggleSelection('certifications')} className="w-4 h-4 rounded border-white/10 bg-slate-950 text-indigo-500" />
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <Award className="h-4 w-4 text-indigo-400" /> Certifications
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ml-auto mr-8 ${
+                          isDiff ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-500'
+                        }`}>
+                          {isDiff ? `+${newCerts.length} New` : 'All Synced'}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-500 font-bold block mb-1">Current Profile ({currentVal.length})</span>
+                          <ul className="space-y-1 text-slate-400 font-medium list-disc pl-4">
+                            {currentVal.slice(0, 3).map((c, idx) => <li key={idx} className="truncate max-w-[130px]">{c}</li>)}
+                            {currentVal.length > 3 && <li className="text-[10px] text-slate-500">+{currentVal.length - 3} more</li>}
+                            {currentVal.length === 0 && <span className="text-xs text-slate-500 italic block pl-0 list-none">None</span>}
+                          </ul>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 font-bold block mb-1">Extracted Resume ({newVal.length})</span>
+                          <ul className="space-y-1 list-disc pl-4">
+                            {newVal.slice(0, 3).map((c, idx) => {
+                              const isNew = newCerts.includes(c);
+                              return (
+                                <li key={idx} className={`truncate max-w-[130px] ${isNew ? 'text-emerald-400 font-bold' : 'text-slate-300'}`}>
+                                  {c}
+                                </li>
+                              );
+                            })}
+                            {newVal.length > 3 && <li className="text-[10px] text-slate-500">+{newVal.length - 3} more</li>}
+                            {newVal.length === 0 && <span className="text-xs text-slate-500 italic block pl-0 list-none font-medium">None</span>}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/5 flex justify-end gap-3">
+            <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-between gap-3">
               <Button disabled={isSyncing} variant="outline" onClick={() => handleSync(true)} className="border-white/10 text-slate-300 hover:bg-white/5">
                 Skip Sync
               </Button>
-              <Button disabled={isSyncing} onClick={() => handleSync(false)} className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold">
-                {isSyncing ? "Syncing..." : "Confirm & Sync"}
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
+              <div className="flex gap-2">
+                <Button disabled={isSyncing} onClick={acceptAllAndSync} className="bg-slate-900 border border-white/10 text-indigo-400 hover:bg-slate-800 font-semibold">
+                  Accept All Changes
+                </Button>
+                <Button disabled={isSyncing} onClick={() => handleSync(false)} className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold">
+                  {isSyncing ? "Syncing..." : "Sync Selected Changes"}
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
             </div>
           </Card>
         )}

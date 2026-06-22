@@ -122,7 +122,10 @@ function extractSections(text) {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    const lower = trimmed.toLowerCase();
+    // Strip leading numbers, symbols, bullet points, spaces, parentheses, brackets
+    const cleanLine = trimmed.replace(/^[\s\-*•#\d\.\(\)\[\]]+/g, '').trim();
+    if (!cleanLine) continue;
+    const lower = cleanLine.toLowerCase();
     
     if (lower.match(/^(education|academic background|academics|qualifications|academic details)/i)) {
       currentSection = 'education';
@@ -156,30 +159,32 @@ const PHONE_REGEX = /\+?\d[\d\-\(\)\s]{7,15}\d/;
 // Parse Contact details helper
 function parseContactDetails(text, userDoc) {
   const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-  const linkedinRegex = /(?:https?:\/\/)?(?:www\.)?linkedin\.com(?:\/in\/[a-zA-Z0-9_\-\u00C0-\u00FF]+|\/[a-zA-Z0-9_\-\u00C0-\u00FF]+)?/i;
-  const githubRegex = /(?:https?:\/\/)?(?:[a-zA-Z0-9_\-]+\.)?github\.(?:com|io)(?:\/[a-zA-Z0-9_\-\/]+)?/i;
-
   const emailMatch = text.match(emailRegex);
   const phoneMatch = text.match(PHONE_REGEX);
   
   let linkedin = '';
-  const linkedinMatch = text.match(linkedinRegex);
-  if (linkedinMatch) {
-    linkedin = linkedinMatch[0];
-  } else if (text.toLowerCase().includes('linkedin.com/in/')) {
-    linkedin = 'https://linkedin.com/in/';
-  } else if (text.toLowerCase().includes('linkedin.com')) {
-    linkedin = 'https://linkedin.com';
+  const linkedinMatches = text.match(/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9_\-\u00C0-\u00FF]+/gi)
+    || text.match(/(?:https?:\/\/)?(?:[a-z]{2,3}\.)?linkedin\.com\/[a-zA-Z0-9_\-\u00C0-\u00FF]+/gi)
+    || text.match(/(?:https?:\/\/)?(?:www\.)?linkedin\.com/gi);
+  if (linkedinMatches && linkedinMatches.length > 0) {
+    let bestMatch = linkedinMatches[0].replace(/[.,\(\)]+$/, '');
+    if (!bestMatch.startsWith('http')) {
+      bestMatch = 'https://' + bestMatch;
+    }
+    linkedin = bestMatch;
   }
 
   let github = '';
-  const githubMatch = text.match(githubRegex);
-  if (githubMatch) {
-    github = githubMatch[0];
-  } else if (text.toLowerCase().includes('github.com')) {
-    github = 'https://github.com';
-  } else if (text.toLowerCase().includes('github.io')) {
-    github = 'https://github.io';
+  const githubMatches = text.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_\-\/]+/gi)
+    || text.match(/(?:https?:\/\/)?(?:[a-zA-Z0-9_\-]+\.)?github\.io\/[a-zA-Z0-9_\-\/]+/gi)
+    || text.match(/(?:https?:\/\/)?(?:www\.)?github\.com/gi)
+    || text.match(/(?:https?:\/\/)?(?:www\.)?github\.io/gi);
+  if (githubMatches && githubMatches.length > 0) {
+    let bestMatch = githubMatches[0].replace(/[.,\(\)]+$/, '');
+    if (!bestMatch.startsWith('http')) {
+      bestMatch = 'https://' + bestMatch;
+    }
+    github = bestMatch;
   }
 
   // Extract Name from first 5 non-empty lines
@@ -235,17 +240,17 @@ function parseSkills(text) {
 
 // Parse Projects helper
 function parseProjects(projectLines, rawText) {
-  const githubUrls = rawText.match(/(?:https?:\/\/)?(?:www\.)?github\.(?:com|io)\/([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)/g) || [];
   const projects = [];
   
-  if (projectLines.length > 0) {
+  if (projectLines && projectLines.length > 0) {
     let currentProject = null;
     
     for (let i = 0; i < projectLines.length; i++) {
       const line = projectLines[i].trim();
       if (!line) continue;
       
-      const isTitle = line.length > 3 && line.length < 50 && !line.startsWith('-') && !line.startsWith('•') && !line.startsWith('*') && (currentProject === null || line.match(/^(?:project|built|designed|developed|e-commerce|portfolio|tracker|api|system|app|web)/i) || i === 0);
+      const isTitle = line.length > 3 && line.length < 60 && !line.startsWith('-') && !line.startsWith('•') && !line.startsWith('*') && 
+        (currentProject === null || line.match(/^(?:project|built|designed|developed|e-commerce|portfolio|tracker|api|system|app|web)/i) || i === 0);
       
       if (isTitle) {
         if (currentProject) {
@@ -277,12 +282,9 @@ function parseProjects(projectLines, rawText) {
           
           for (const skillKey in SKILL_MAP) {
             const escaped = skillKey.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            let regex;
-            if (skillKey.includes('+') || skillKey.includes('.') || skillKey.includes('#')) {
-              regex = new RegExp(escaped, 'i');
-            } else {
-              regex = new RegExp('\\b' + escaped + '\\b', 'i');
-            }
+            let regex = skillKey.includes('+') || skillKey.includes('.') || skillKey.includes('#')
+              ? new RegExp(escaped, 'i')
+              : new RegExp('\\b' + escaped + '\\b', 'i');
             if (regex.test(line)) {
               const tech = SKILL_MAP[skillKey];
               if (!currentProject.technologies.includes(tech)) {
@@ -307,67 +309,64 @@ function parseProjects(projectLines, rawText) {
     }
   }
 
-  // Content-based Projects Fallback (Phase 13.2 / scoring robustness):
-  // Scan rawText line by line if fewer than 2 projects were parsed.
-  // Classify a line as a project if it contains Tech Stack, Developed, Built, or Implemented.
-  if (projects.length < 2) {
-    const rawLines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
-    let pCount = projects.length + 1;
-    for (let i = 0; i < rawLines.length; i++) {
-      const line = rawLines[i];
-      const lower = line.toLowerCase();
-      const hasProjKeyword = lower.includes('developed') || lower.includes('built') || lower.includes('implemented') || lower.includes('tech stack');
-      
-      if (hasProjKeyword && line.length > 15) {
-        let title = '';
-        if (i > 0) {
-          const prevLine = rawLines[i - 1];
-          const prevLower = prevLine.toLowerCase();
-          if (
-            prevLine.length > 2 &&
-            prevLine.length < 50 &&
-            !prevLine.startsWith('-') &&
-            !prevLine.startsWith('•') &&
-            !prevLine.startsWith('*') &&
-            !prevLower.includes('experience') &&
-            !prevLower.includes('education') &&
-            !prevLower.includes('skills') &&
-            !prevLower.includes('@') &&
-            !prevLine.match(PHONE_REGEX)
-          ) {
-            title = prevLine.replace(/[:|()\-+]/g, ' ').trim();
-          }
+  // Content-based Projects Fallback (Do not rely only on "Projects" heading)
+  // Scan rawText line by line. Classify an entry as a project if it contains Tech Stack, Developed, Built, or Implemented.
+  const rawLines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+  let pCount = projects.length + 1;
+  for (let i = 0; i < rawLines.length; i++) {
+    const line = rawLines[i];
+    const lower = line.toLowerCase();
+    const hasProjKeyword = lower.includes('developed') || lower.includes('built') || lower.includes('implemented') || lower.includes('tech stack');
+    
+    if (hasProjKeyword && line.length > 15) {
+      let title = '';
+      if (i > 0) {
+        const prevLine = rawLines[i - 1];
+        const prevLower = prevLine.toLowerCase();
+        if (
+          prevLine.length > 2 &&
+          prevLine.length < 60 &&
+          !prevLine.startsWith('-') &&
+          !prevLine.startsWith('•') &&
+          !prevLine.startsWith('*') &&
+          !prevLower.includes('experience') &&
+          !prevLower.includes('education') &&
+          !prevLower.includes('skills') &&
+          !prevLower.includes('achievements') &&
+          !prevLower.includes('@') &&
+          !prevLine.match(PHONE_REGEX)
+        ) {
+          title = prevLine.replace(/[:|()\-+]/g, ' ').trim();
         }
-        if (!title) {
-          title = `Project ${pCount}`;
+      }
+      if (!title) {
+        title = `Project ${pCount}`;
+      }
+      
+      const alreadyExists = projects.some(p => 
+        p.description.toLowerCase().includes(line.slice(0, Math.min(25, line.length)).toLowerCase()) || 
+        p.title.toLowerCase() === title.toLowerCase()
+      );
+      if (!alreadyExists) {
+        const tech = [];
+        for (const skillKey in SKILL_MAP) {
+          const escaped = skillKey.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+          let regex = skillKey.includes('+') || skillKey.includes('.') || skillKey.includes('#')
+            ? new RegExp(escaped, 'i')
+            : new RegExp('\\b' + escaped + '\\b', 'i');
+          if (regex.test(line)) {
+            tech.push(SKILL_MAP[skillKey]);
+          }
         }
         
-        // Ensure this line or title doesn't duplicate
-        const alreadyExists = projects.some(p => p.description.includes(line.slice(0, 20)) || p.title.toLowerCase() === title.toLowerCase());
-        if (!alreadyExists) {
-          const tech = [];
-          for (const skillKey in SKILL_MAP) {
-            const escaped = skillKey.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            let regex;
-            if (skillKey.includes('+') || skillKey.includes('.') || skillKey.includes('#')) {
-              regex = new RegExp(escaped, 'i');
-            } else {
-              regex = new RegExp('\\b' + escaped + '\\b', 'i');
-            }
-            if (regex.test(line)) {
-              tech.push(SKILL_MAP[skillKey]);
-            }
-          }
-          
-          projects.push({
-            title: title,
-            description: line,
-            technologies: [...new Set(tech)],
-            githubLink: line.match(/(?:https?:\/\/)?(?:www\.)?github\.(?:com|io)\/[a-zA-Z0-9_\-\/]+/i)?.[0] || '',
-            liveLink: line.match(/(?:https?:\/\/)?(?:www\.)?(?!github|linkedin)[a-zA-Z0-9_\-]+\.[a-zA-Z]{2,}(?:\/[a-zA-Z0-9_\-\?=&]+)*/i)?.[0] || ''
-          });
-          pCount++;
-        }
+        projects.push({
+          title: title,
+          description: line,
+          technologies: [...new Set(tech)],
+          githubLink: line.match(/(?:https?:\/\/)?(?:www\.)?github\.(?:com|io)\/[a-zA-Z0-9_\-\/]+/i)?.[0] || '',
+          liveLink: line.match(/(?:https?:\/\/)?(?:www\.)?(?!github|linkedin)[a-zA-Z0-9_\-]+\.[a-zA-Z]{2,}(?:\/[a-zA-Z0-9_\-\?=&]+)*/i)?.[0] || ''
+        });
+        pCount++;
       }
     }
   }
@@ -642,8 +641,8 @@ export async function POST(req) {
 
     // 7. GitHub & LinkedIn Links (10 pts)
     let socialLinksPoints = 0;
-    const hasGithub = parsedData.github || extractedText.toLowerCase().includes('github.com');
-    const hasLinkedin = parsedData.linkedin || extractedText.toLowerCase().includes('linkedin.com');
+    const hasGithub = !!(parsedData.github || extractedText.toLowerCase().includes('github.com') || extractedText.toLowerCase().includes('github.io'));
+    const hasLinkedin = !!(parsedData.linkedin || extractedText.toLowerCase().includes('linkedin.com'));
     if (hasGithub) socialLinksPoints += 5;
     if (hasLinkedin) socialLinksPoints += 5;
 
@@ -841,7 +840,7 @@ ${hasGithub ? '✓' : '✗'} GitHub
 ${hasLinkedin ? '✓' : '✗'} LinkedIn
 ✓ ${parsedData.projects.length} Projects
 ✓ ${parsedData.skills.length} Skills
-✓ ${parsedData.certifications.length} Certification`);
+✓ ${parsedData.certifications.length} Certification${parsedData.certifications.length === 1 ? '' : 's'}`);
       console.log("-------------------------------------------------------------");
     }
 
