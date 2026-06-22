@@ -24,6 +24,9 @@ const ROLE_SKILLS = {
 const SKILL_MAP = {
   'html': 'HTML',
   'css': 'CSS',
+  'tailwind css': 'Tailwind CSS',
+  'tailwindcss': 'Tailwind CSS',
+  'tailwind': 'Tailwind CSS',
   'javascript': 'JavaScript',
   'js': 'JavaScript',
   'typescript': 'TypeScript',
@@ -35,8 +38,9 @@ const SKILL_MAP = {
   'angular': 'Angular',
   'node.js': 'Node.js',
   'nodejs': 'Node.js',
-  'express': 'Express',
-  'expressjs': 'Express',
+  'express.js': 'Express.js',
+  'expressjs': 'Express.js',
+  'express': 'Express.js',
   'mongodb': 'MongoDB',
   'mongoose': 'Mongoose',
   'sql': 'SQL',
@@ -129,10 +133,10 @@ function extractSections(text) {
     } else if (lower.match(/^(projects|academic projects|personal projects|key projects|technical projects)/i)) {
       currentSection = 'projects';
       continue;
-    } else if (lower.match(/^(experience|work experience|professional experience|employment|internships|work history|career history)/i)) {
+    } else if (lower.match(/^(experience|activities|experience\s*&\s*activities|internships|participation|open\s*source|work experience|professional experience|employment|work history|career history)/i)) {
       currentSection = 'experience';
       continue;
-    } else if (lower.match(/^(certifications|licenses|certifications & courses|credentials|courses)/i)) {
+    } else if (lower.match(/^(certifications|courses|training|certificates|licenses|certifications\s*&\s*courses|credentials)/i)) {
       currentSection = 'certifications';
       continue;
     } else if (lower.match(/^(achievements|awards|co-curricular achievements|honors|extracurricular)/i)) {
@@ -152,13 +156,31 @@ const PHONE_REGEX = /\+?\d[\d\-\(\)\s]{7,15}\d/;
 // Parse Contact details helper
 function parseContactDetails(text, userDoc) {
   const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-  const linkedinRegex = /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9_\-\u00C0-\u00FF]+/i;
-  const githubRegex = /(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_\-]+/i;
+  const linkedinRegex = /(?:https?:\/\/)?(?:www\.)?linkedin\.com(?:\/in\/[a-zA-Z0-9_\-\u00C0-\u00FF]+|\/[a-zA-Z0-9_\-\u00C0-\u00FF]+)?/i;
+  const githubRegex = /(?:https?:\/\/)?(?:[a-zA-Z0-9_\-]+\.)?github\.(?:com|io)(?:\/[a-zA-Z0-9_\-\/]+)?/i;
 
   const emailMatch = text.match(emailRegex);
   const phoneMatch = text.match(PHONE_REGEX);
+  
+  let linkedin = '';
   const linkedinMatch = text.match(linkedinRegex);
+  if (linkedinMatch) {
+    linkedin = linkedinMatch[0];
+  } else if (text.toLowerCase().includes('linkedin.com/in/')) {
+    linkedin = 'https://linkedin.com/in/';
+  } else if (text.toLowerCase().includes('linkedin.com')) {
+    linkedin = 'https://linkedin.com';
+  }
+
+  let github = '';
   const githubMatch = text.match(githubRegex);
+  if (githubMatch) {
+    github = githubMatch[0];
+  } else if (text.toLowerCase().includes('github.com')) {
+    github = 'https://github.com';
+  } else if (text.toLowerCase().includes('github.io')) {
+    github = 'https://github.io';
+  }
 
   // Extract Name from first 5 non-empty lines
   const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -184,8 +206,8 @@ function parseContactDetails(text, userDoc) {
     name: parsedName || userDoc.name || '',
     email: emailMatch ? emailMatch[0] : (userDoc.email || ''),
     phone: phoneMatch ? phoneMatch[0] : '',
-    linkedin: linkedinMatch ? linkedinMatch[0] : '',
-    github: githubMatch ? githubMatch[0] : ''
+    linkedin,
+    github
   };
 }
 
@@ -213,105 +235,143 @@ function parseSkills(text) {
 
 // Parse Projects helper
 function parseProjects(projectLines, rawText) {
-  const githubUrls = rawText.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)/g) || [];
+  const githubUrls = rawText.match(/(?:https?:\/\/)?(?:www\.)?github\.(?:com|io)\/([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)/g) || [];
   const projects = [];
   
-  if (projectLines.length === 0) {
-    const uniqueRepos = [...new Set(githubUrls)];
-    uniqueRepos.forEach((repo, idx) => {
-      const parts = repo.split('/');
-      const title = parts[parts.length - 1] || `Project ${idx + 1}`;
-      projects.push({
-        title: title.replace(/[-_]/g, ' '),
-        description: `Source repository code for ${title}.`,
-        technologies: [],
-        githubLink: repo,
-        liveLink: ''
-      });
-    });
+  if (projectLines.length > 0) {
+    let currentProject = null;
     
-    // Look for generic project descriptions in raw text if none found
-    if (projects.length === 0) {
-      const lines = rawText.split('\n');
-      let pCount = 1;
-      for (const line of lines) {
-        if (line.match(/(developed|built|designed|implemented)\s+a?\s*([a-zA-Z0-9_\-\s]{3,30})/i) && line.length > 20) {
-          projects.push({
-            title: `Project ${pCount++}`,
-            description: line.trim(),
+    for (let i = 0; i < projectLines.length; i++) {
+      const line = projectLines[i].trim();
+      if (!line) continue;
+      
+      const isTitle = line.length > 3 && line.length < 50 && !line.startsWith('-') && !line.startsWith('•') && !line.startsWith('*') && (currentProject === null || line.match(/^(?:project|built|designed|developed|e-commerce|portfolio|tracker|api|system|app|web)/i) || i === 0);
+      
+      if (isTitle) {
+        if (currentProject) {
+          projects.push(currentProject);
+        }
+        
+        const githubMatch = line.match(/(?:https?:\/\/)?(?:www\.)?github\.(?:com|io)\/[a-zA-Z0-9_\-\/]+/i);
+        
+        currentProject = {
+          title: line.replace(/[:|()\-+]/g, ' ').trim(),
+          description: '',
+          technologies: [],
+          githubLink: githubMatch ? githubMatch[0] : '',
+          liveLink: ''
+        };
+      } else {
+        if (currentProject) {
+          currentProject.description += (currentProject.description ? ' ' : '') + line;
+          
+          const githubMatch = line.match(/(?:https?:\/\/)?(?:www\.)?github\.(?:com|io)\/[a-zA-Z0-9_\-\/]+/i);
+          if (githubMatch && !currentProject.githubLink) {
+            currentProject.githubLink = githubMatch[0];
+          }
+          
+          const liveMatch = line.match(/(?:https?:\/\/)?(?:www\.)?(?!github|linkedin)[a-zA-Z0-9_\-]+\.[a-zA-Z]{2,}(?:\/[a-zA-Z0-9_\-\?=&]+)*/i);
+          if (liveMatch && !currentProject.liveLink) {
+            currentProject.liveLink = liveMatch[0];
+          }
+          
+          for (const skillKey in SKILL_MAP) {
+            const escaped = skillKey.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            let regex;
+            if (skillKey.includes('+') || skillKey.includes('.') || skillKey.includes('#')) {
+              regex = new RegExp(escaped, 'i');
+            } else {
+              regex = new RegExp('\\b' + escaped + '\\b', 'i');
+            }
+            if (regex.test(line)) {
+              const tech = SKILL_MAP[skillKey];
+              if (!currentProject.technologies.includes(tech)) {
+                currentProject.technologies.push(tech);
+              }
+            }
+          }
+        } else {
+          currentProject = {
+            title: 'Project 1',
+            description: line,
             technologies: [],
             githubLink: '',
             liveLink: ''
-          });
-          if (pCount > 3) break;
+          };
         }
       }
     }
-    return projects;
+    
+    if (currentProject) {
+      projects.push(currentProject);
+    }
   }
 
-  let currentProject = null;
-  
-  for (let i = 0; i < projectLines.length; i++) {
-    const line = projectLines[i].trim();
-    if (!line) continue;
-    
-    const isTitle = line.length > 3 && line.length < 50 && !line.startsWith('-') && !line.startsWith('•') && !line.startsWith('*') && (currentProject === null || line.match(/^(?:project|built|designed|developed|e-commerce|portfolio|tracker|api|system|app|web)/i) || i === 0);
-    
-    if (isTitle) {
-      if (currentProject) {
-        projects.push(currentProject);
-      }
+  // Content-based Projects Fallback (Phase 13.2 / scoring robustness):
+  // Scan rawText line by line if fewer than 2 projects were parsed.
+  // Classify a line as a project if it contains Tech Stack, Developed, Built, or Implemented.
+  if (projects.length < 2) {
+    const rawLines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+    let pCount = projects.length + 1;
+    for (let i = 0; i < rawLines.length; i++) {
+      const line = rawLines[i];
+      const lower = line.toLowerCase();
+      const hasProjKeyword = lower.includes('developed') || lower.includes('built') || lower.includes('implemented') || lower.includes('tech stack');
       
-      const githubMatch = line.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_\-\/]+/i);
-      
-      currentProject = {
-        title: line.replace(/[:|()\-+]/g, ' ').trim(),
-        description: '',
-        technologies: [],
-        githubLink: githubMatch ? githubMatch[0] : '',
-        liveLink: ''
-      };
-    } else {
-      if (currentProject) {
-        currentProject.description += (currentProject.description ? ' ' : '') + line;
-        
-        const githubMatch = line.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_\-\/]+/i);
-        if (githubMatch && !currentProject.githubLink) {
-          currentProject.githubLink = githubMatch[0];
-        }
-        
-        const liveMatch = line.match(/(?:https?:\/\/)?(?:www\.)?(?!github|linkedin)[a-zA-Z0-9_\-]+\.[a-zA-Z]{2,}(?:\/[a-zA-Z0-9_\-\?=&]+)*/i);
-        if (liveMatch && !currentProject.liveLink) {
-          currentProject.liveLink = liveMatch[0];
-        }
-        
-        for (const skillKey in SKILL_MAP) {
-          const escaped = skillKey.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-          const regex = new RegExp('\\b' + escaped + '\\b', 'i');
-          if (regex.test(line)) {
-            const tech = SKILL_MAP[skillKey];
-            if (!currentProject.technologies.includes(tech)) {
-              currentProject.technologies.push(tech);
-            }
+      if (hasProjKeyword && line.length > 15) {
+        let title = '';
+        if (i > 0) {
+          const prevLine = rawLines[i - 1];
+          const prevLower = prevLine.toLowerCase();
+          if (
+            prevLine.length > 2 &&
+            prevLine.length < 50 &&
+            !prevLine.startsWith('-') &&
+            !prevLine.startsWith('•') &&
+            !prevLine.startsWith('*') &&
+            !prevLower.includes('experience') &&
+            !prevLower.includes('education') &&
+            !prevLower.includes('skills') &&
+            !prevLower.includes('@') &&
+            !prevLine.match(PHONE_REGEX)
+          ) {
+            title = prevLine.replace(/[:|()\-+]/g, ' ').trim();
           }
         }
-      } else {
-        currentProject = {
-          title: 'Project 1',
-          description: line,
-          technologies: [],
-          githubLink: '',
-          liveLink: ''
-        };
+        if (!title) {
+          title = `Project ${pCount}`;
+        }
+        
+        // Ensure this line or title doesn't duplicate
+        const alreadyExists = projects.some(p => p.description.includes(line.slice(0, 20)) || p.title.toLowerCase() === title.toLowerCase());
+        if (!alreadyExists) {
+          const tech = [];
+          for (const skillKey in SKILL_MAP) {
+            const escaped = skillKey.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            let regex;
+            if (skillKey.includes('+') || skillKey.includes('.') || skillKey.includes('#')) {
+              regex = new RegExp(escaped, 'i');
+            } else {
+              regex = new RegExp('\\b' + escaped + '\\b', 'i');
+            }
+            if (regex.test(line)) {
+              tech.push(SKILL_MAP[skillKey]);
+            }
+          }
+          
+          projects.push({
+            title: title,
+            description: line,
+            technologies: [...new Set(tech)],
+            githubLink: line.match(/(?:https?:\/\/)?(?:www\.)?github\.(?:com|io)\/[a-zA-Z0-9_\-\/]+/i)?.[0] || '',
+            liveLink: line.match(/(?:https?:\/\/)?(?:www\.)?(?!github|linkedin)[a-zA-Z0-9_\-]+\.[a-zA-Z]{2,}(?:\/[a-zA-Z0-9_\-\?=&]+)*/i)?.[0] || ''
+          });
+          pCount++;
+        }
       }
     }
   }
-  
-  if (currentProject) {
-    projects.push(currentProject);
-  }
-  
+
   projects.forEach(p => {
     p.description = p.description.replace(/^[\s-•*]+/g, '').trim();
   });
@@ -808,6 +868,18 @@ export async function POST(req) {
     }
 
     await profile.save();
+
+    // Debug logging for developer mode (visible in console)
+    if (process.env.NODE_ENV === 'development') {
+      console.log("----------------------- EXTRACTED LOG -----------------------");
+      console.log(`Detected:
+${hasGithub ? '✓' : '✗'} GitHub
+${hasLinkedin ? '✓' : '✗'} LinkedIn
+✓ ${parsedData.projects.length} Projects
+✓ ${parsedData.skills.length} Skills
+✓ ${parsedData.certifications.length} Certification`);
+      console.log("-------------------------------------------------------------");
+    }
 
     return NextResponse.json({
       message: 'Resume analysis and profile sync complete.',

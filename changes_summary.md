@@ -188,3 +188,19 @@ This document details all the enhancements and updates implemented in the SkillB
 ### 💡 Details:
 1. **Unified Environment Variable Fallbacks**: Resolved the `client_id is required` runtime signin OAuth exception by editing the NextAuth API handler's provider configurations. Added secondary checks (`process.env.GITHUB_ID` and `process.env.Google_Client_ID`) to align with existing environment settings.
 2. **Environment Synchronization**: Standardized the NextAuth OAuth credentials inside `.env.local` by defining `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, and `GITHUB_CLIENT_SECRET` to prevent any future naming mismatch issues.
+
+---
+
+## 12. Improved Resume Extraction & Scoring Logic (Scoring & Parsing Enhancements)
+
+### 📂 Modified Files:
+* **Backend API Route**: [route.js](file:///c:/Users/pjha9/Documents/ALL%20Coding/Projects/SkillBridge/src/app/api/resume-analyzer/route.js)
+* **Frontend Component**: [page.jsx](file:///c:/Users/pjha9/Documents/ALL%20Coding/Projects/SkillBridge/src/app/dashboard/resume-analyzer/page.jsx)
+
+### 💡 Details:
+1. **GitHub & LinkedIn Extraction Rules**: Expanded the regex and matching conditions to robustly capture any instances of `github.com` or `github.io` (including custom subdomains) and `linkedin.com` / `linkedin.com/in/`.
+2. **Predefined Skills Database**: Enlarged the `SKILL_MAP` keywords database to cleanly capture matches for Tailwind CSS, Express.js, JavaScript, React, Node.js, Express, MongoDB, Java, C++, Next.js, HTML, and CSS anywhere in the text.
+3. **Advanced Projects Fallback**: Programmed a content-based fallback that scans raw resume text line-by-line for action keywords (`Tech Stack`, `Developed`, `Built`, `Implemented`) if fewer than two projects are matched via section headings.
+4. **Flexible Heading Matching**: Updated heading-based extraction to support custom variations for Experience (`Experience`, `Activities`, `Experience & Activities`, `Internships`, `Participation`, `Open Source`) and Certifications (`Certifications`, `Courses`, `Training`, `Certificates`).
+5. **No-Zero Content Scoring**: Ensured that Readiness and ATS scores are computed directly from extracted content matches (rather than assigning zero simply because a heading is absent).
+6. **Developer Mode Debug Logs**: Implemented a detailed extraction check-log output to both the server-side logs and a client-side visual debug card + browser console logging statement when running in development mode.

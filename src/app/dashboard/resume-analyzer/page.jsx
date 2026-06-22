@@ -118,6 +118,23 @@ export default function ResumeAnalyzerPage() {
     fetchAnalysis();
   }, []);
 
+  const isDev = process.env.NODE_ENV === 'development' || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
+
+  useEffect(() => {
+    if (analysis && isDev) {
+      const hasGithub = !!(analysis.parsedData.github || analysis.extractedText?.toLowerCase().includes('github.com') || analysis.extractedText?.toLowerCase().includes('github.io'));
+      const hasLinkedin = !!(analysis.parsedData.linkedin || analysis.extractedText?.toLowerCase().includes('linkedin.com'));
+      console.log("=== AI Resume Extraction Debug Log ===");
+      console.log(`Detected:
+${hasGithub ? '✓' : '✗'} GitHub
+${hasLinkedin ? '✓' : '✗'} LinkedIn
+✓ ${analysis.parsedData.projects?.length || 0} Projects
+✓ ${analysis.parsedData.skills?.length || 0} Skills
+✓ ${analysis.parsedData.certifications?.length || 0} Certification`);
+      console.log("======================================");
+    }
+  }, [analysis]);
+
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1355,6 +1372,27 @@ export default function ResumeAnalyzerPage() {
                 )}
               </div>
             </Card>
+
+            {/* Developer Mode Debug Logs (Phase 13.2) */}
+            {isDev && (
+              <Card className="glass-panel border-indigo-500/20 bg-indigo-500/5 p-5 mt-8 animate-slide-up">
+                <CardHeader className="p-0 pb-3 border-b border-white/5">
+                  <CardTitle className="text-xs font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <Sparkles className="h-4 w-4 animate-pulse" /> Developer Mode Debug Logs
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 pt-3">
+                  <pre className="text-xs font-mono text-slate-300 bg-slate-950/80 p-3 rounded-lg border border-white/5 whitespace-pre-line leading-relaxed">
+                    {`Detected:
+${(analysis.parsedData.github || analysis.extractedText?.toLowerCase().includes('github.com') || analysis.extractedText?.toLowerCase().includes('github.io')) ? '✓' : '✗'} GitHub
+${(analysis.parsedData.linkedin || analysis.extractedText?.toLowerCase().includes('linkedin.com')) ? '✓' : '✗'} LinkedIn
+✓ ${analysis.parsedData.projects?.length || 0} Projects
+✓ ${analysis.parsedData.skills?.length || 0} Skills
+✓ ${analysis.parsedData.certifications?.length || 0} Certification`}
+                  </pre>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
       </div>
