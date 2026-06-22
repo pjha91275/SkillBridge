@@ -28,6 +28,11 @@ const ProfileSchema = new Schema(
         'Full Stack Developer',
         'Software Engineer',
         'Data Analyst',
+        'Machine Learning Engineer',
+        'DevOps Engineer',
+        'Cloud Architect',
+        'Cybersecurity Analyst',
+        'Mobile Developer',
         '',
       ],
       default: '',
@@ -47,6 +52,10 @@ const ProfileSchema = new Schema(
       default: 0,
       min: 0,
       max: 100,
+    },
+    registeredHackathons: {
+      type: [String],
+      default: [],
     },
   },
   {

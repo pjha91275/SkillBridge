@@ -26,6 +26,11 @@ const ROLE_SKILLS: Record<string, string[]> = {
   'Full Stack Developer': ['React', 'Node.js', 'MongoDB', 'SQL'],
   'Software Engineer': ['Data Structures', 'Algorithms', 'DBMS', 'System Design'],
   'Data Analyst': ['Python', 'SQL', 'Excel', 'Tableau'],
+  'Machine Learning Engineer': ['Python', 'Machine Learning', 'Deep Learning', 'SQL'],
+  'DevOps Engineer': ['Docker', 'Kubernetes', 'CI/CD', 'Linux', 'AWS'],
+  'Cloud Architect': ['AWS', 'Cloud Computing', 'System Design', 'Networking'],
+  'Cybersecurity Analyst': ['Networking', 'Linux', 'Security', 'Cryptography'],
+  'Mobile Developer': ['React Native', 'Swift', 'Kotlin', 'JavaScript'],
 };
 
 interface RoadmapStep {

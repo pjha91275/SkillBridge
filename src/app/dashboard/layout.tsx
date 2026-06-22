@@ -17,13 +17,18 @@ import {
   CheckSquare,
   FileText,
   TrendingUp,
+  Code,
+  Trophy,
 } from 'lucide-react';
+
 
 const sidebarItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Advanced Analytics', href: '/dashboard/analytics', icon: TrendingUp },
   { name: 'Profile', href: '/dashboard/profile', icon: User },
   { name: 'Readiness Score', href: '/dashboard/readiness', icon: Award },
+  { name: 'DSA Tracker', href: '/dashboard/dsa-tracker', icon: Code },
+  { name: 'Hackathons', href: '/dashboard/hackathons', icon: Trophy },
   { name: 'Skill Gap', href: '/dashboard/skill-gap', icon: Zap },
   { name: 'Roadmap', href: '/dashboard/roadmap', icon: Map },
   { name: 'Company Readiness', href: '/dashboard/company-readiness', icon: Building2 },

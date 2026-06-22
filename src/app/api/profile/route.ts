@@ -48,6 +48,7 @@ export async function GET(req: Request) {
       targetRole: profileDoc.targetRole,
       projects: profileDoc.projects || [],
       dsaProgress: profileDoc.dsaProgress || 0,
+      registeredHackathons: profileDoc.registeredHackathons || [],
     });
   } catch (error: any) {
     console.error('Error fetching profile:', error);
@@ -80,6 +81,7 @@ export async function PUT(req: Request) {
       targetRole,
       projects,
       dsaProgress,
+      registeredHackathons,
     } = body;
 
     // Validate inputs
@@ -118,6 +120,9 @@ export async function PUT(req: Request) {
         targetRole: targetRole || '',
         projects: Array.isArray(projects) ? projects : [],
         dsaProgress: dsaProgress !== undefined ? Number(dsaProgress) : 0,
+        ...(registeredHackathons !== undefined && {
+          registeredHackathons: Array.isArray(registeredHackathons) ? registeredHackathons : [],
+        }),
       },
       { new: true, upsert: true }
     );
@@ -136,6 +141,7 @@ export async function PUT(req: Request) {
         targetRole: updatedProfile.targetRole,
         projects: updatedProfile.projects,
         dsaProgress: updatedProfile.dsaProgress,
+        registeredHackathons: updatedProfile.registeredHackathons || [],
       },
     });
   } catch (error: any) {

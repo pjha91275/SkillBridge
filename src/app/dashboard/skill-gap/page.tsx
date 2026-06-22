@@ -23,6 +23,11 @@ const ROLE_SKILLS: Record<string, string[]> = {
   'Full Stack Developer': ['React', 'Node.js', 'MongoDB', 'DBMS', 'SQL', 'Git', 'Tailwind CSS'],
   'Software Engineer': ['Data Structures', 'Algorithms', 'DBMS', 'Java', 'Python', 'System Design', 'Git'],
   'Data Analyst': ['Python', 'SQL', 'Excel', 'Tableau', 'Statistics', 'Pandas', 'Git'],
+  'Machine Learning Engineer': ['Python', 'Machine Learning', 'Deep Learning', 'SQL', 'Statistics', 'Git'],
+  'DevOps Engineer': ['Docker', 'Kubernetes', 'CI/CD', 'Linux', 'AWS', 'Git', 'Shell Scripting'],
+  'Cloud Architect': ['AWS', 'Cloud Computing', 'System Design', 'Networking', 'Security', 'Git'],
+  'Cybersecurity Analyst': ['Networking', 'Linux', 'Security', 'Python', 'Cryptography', 'Penetration Testing'],
+  'Mobile Developer': ['React Native', 'Swift', 'Kotlin', 'JavaScript', 'Git'],
 };
 
 const SKILL_RESOURCES: Record<string, { desc: string; linkName: string; url: string }> = {
@@ -47,6 +52,21 @@ const SKILL_RESOURCES: Record<string, { desc: string; linkName: string; url: str
   'Tableau': { desc: 'Data modeling visualization and dashboards.', linkName: 'Tableau training video path', url: 'https://www.tableau.com/learn' },
   'Statistics': { desc: 'Probability models, hypotheses testing logic.', linkName: 'Khan Academy Statistics', url: 'https://www.khanacademy.org/math/statistics-probability' },
   'Pandas': { desc: 'Dataframes, clean filters, analytical workflows.', linkName: 'Pandas user handbook', url: 'https://pandas.pydata.org/docs/' },
+  'Machine Learning': { desc: 'Supervised, unsupervised, regression, classification.', linkName: 'Google ML Crash Course', url: 'https://developers.google.com/machine-learning/crash-course' },
+  'Deep Learning': { desc: 'Neural networks, PyTorch, and TensorFlow paradigms.', linkName: 'Fast.ai Practical Deep Learning', url: 'https://course.fast.ai' },
+  'Kubernetes': { desc: 'Orchestrating containerized systems at scale.', linkName: 'Kubernetes documentation', url: 'https://kubernetes.io/docs/home/' },
+  'CI/CD': { desc: 'Continuous integration and continuous delivery pipelines.', linkName: 'GitLab CI/CD Guides', url: 'https://docs.gitlab.com/ee/ci/' },
+  'Linux': { desc: 'Linux kernel shell administration commands.', linkName: 'Linux Journey courses', url: 'https://linuxjourney.com' },
+  'AWS': { desc: 'Amazon Web Services cloud solution resources.', linkName: 'AWS Training & Certification', url: 'https://aws.amazon.com/training/' },
+  'Shell Scripting': { desc: 'Bash scripting commands and system scripts.', linkName: 'Bash Guide for Beginners', url: 'https://tldp.org/LDP/Bash-Beginners-Guide/html/' },
+  'Cloud Computing': { desc: 'SaaS, PaaS, IaaS structures and scaling.', linkName: 'Google Cloud Training', url: 'https://cloud.google.com/learn' },
+  'Networking': { desc: 'TCP/IP layers, routing, subnets, and protocols.', linkName: 'Cisco Networking Basics', url: 'https://www.netacad.com' },
+  'Security': { desc: 'Core principles of web and application security.', linkName: 'OWASP Top 10 Web Risks', url: 'https://owasp.org/www-project-top-ten/' },
+  'Cryptography': { desc: 'Symmetric/asymmetric encryption, hashes, SSH, SSL.', linkName: 'Cryptography course', url: 'https://www.coursera.org/learn/cryptography' },
+  'Penetration Testing': { desc: 'Exploiting code flaws, Kali Linux pentest labs.', linkName: 'PortSwigger Web Academy', url: 'https://portswigger.net/web-security' },
+  'React Native': { desc: 'Build native iOS and Android apps with React.', linkName: 'React Native Docs', url: 'https://reactnative.dev' },
+  'Swift': { desc: 'Swift programming language syntax for iOS apps.', linkName: 'Swift.org Guide', url: 'https://www.swift.org' },
+  'Kotlin': { desc: 'Kotlin programming language syntax for Android.', linkName: 'Kotlin Docs', url: 'https://kotlinlang.org' },
 };
 
 export default async function SkillGapPage() {

@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { 
-  Users, 
-  GraduationCap, 
-  Sparkles, 
-  Search, 
-  ShieldCheck, 
-  MessageSquareCode, 
+import {
+  Users,
+  GraduationCap,
+  Sparkles,
+  Search,
+  ShieldCheck,
+  MessageSquareCode,
   ArrowRight,
   Code,
   Share2
@@ -15,11 +15,11 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function Home() {
-    const session = await getServerSession(authOptions);
-    const isAuthenticated = !!session;
+  const session = await getServerSession(authOptions);
+  const isAuthenticated = !!session;
 
-    return (
-      <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 overflow-hidden">
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 overflow-hidden">
       {/* Background glowing blobs */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[500px] w-full max-w-7xl rounded-full bg-indigo-600/10 blur-[120px]" />
       <div className="absolute top-[800px] left-1/4 -z-10 h-[400px] w-[400px] rounded-full bg-violet-600/5 blur-[100px]" />
@@ -167,10 +167,10 @@ export default async function Home() {
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-white">Sachin Jha</h4>
-                      <p className="text-xs text-slate-400">TCET Mumbai • Computer Science</p>
+                      <p className="text-xs text-slate-400">TCET Mumbai •  Computer Engineering</p>
                     </div>
                   </div>
-                  
+
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-xl bg-slate-900/50 border border-border/10">
                   <div className="flex items-center gap-3">
@@ -179,10 +179,10 @@ export default async function Home() {
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-white">Prince Jha</h4>
-                      <p className="text-xs text-slate-400">TCET Mumbai • Computer Science</p>
+                      <p className="text-xs text-slate-400">TCET Mumbai • Computer Engineering</p>
                     </div>
                   </div>
-                  
+
                 </div>
               </div>
             </div>

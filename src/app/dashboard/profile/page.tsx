@@ -28,6 +28,11 @@ const TARGET_ROLES = [
   'Full Stack Developer',
   'Software Engineer',
   'Data Analyst',
+  'Machine Learning Engineer',
+  'DevOps Engineer',
+  'Cloud Architect',
+  'Cybersecurity Analyst',
+  'Mobile Developer',
 ];
 
 interface Project {

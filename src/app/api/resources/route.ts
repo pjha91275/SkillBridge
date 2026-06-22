@@ -6,11 +6,19 @@ import Resource from '@/models/Resource';
 
 const SEED_RESOURCES = [
   {
-    title: "Striver's A2Z DSA Course",
+    title: "Striver's A2Z DSA Video Playlist",
     description: "Comprehensive placement preparation video playlist covering core DSA topics like Arrays, LinkedLists, Trees, Graphs, and Dynamic Programming.",
     category: "DSA",
     resourceType: "Video",
-    resourceLink: "https://youtube.com/playlist?list=PLgUwDviBHe0oF6SFtJS_t_DLmKLxoqiC3",
+    resourceLink: "https://youtube.com/playlist?list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz&si=T3HY7x_SDhCQrLXJ",
+    difficultyLevel: "Intermediate",
+  },
+  {
+    title: "Striver's A2Z DSA Sheet",
+    description: "Official Strivers A2Z DSA Coding Practice Sheet covering essential problem solutions.",
+    category: "DSA",
+    resourceType: "Website",
+    resourceLink: "https://takeuforward.org/dsa/strivers-a2z-sheet-learn-dsa-a-to-z",
     difficultyLevel: "Intermediate",
   },
   {
@@ -93,6 +101,30 @@ export async function GET(req: Request) {
     if (count === 0) {
       console.log('No resources found. Seeding initial resources...');
       await Resource.insertMany(SEED_RESOURCES);
+    } else {
+      // Fix wrong Striver course entries if seeded previously
+      await Resource.updateOne(
+        { title: "Striver's A2Z DSA Course" },
+        {
+          title: "Striver's A2Z DSA Video Playlist",
+          resourceLink: "https://youtube.com/playlist?list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz&si=T3HY7x_SDhCQrLXJ",
+          resourceType: "Video",
+          description: "Comprehensive placement preparation video playlist covering core DSA topics like Arrays, LinkedLists, Trees, Graphs, and Dynamic Programming.",
+        }
+      );
+
+      // Check if Sheet is already seeded, if not insert it
+      const hasSheet = await Resource.findOne({ title: "Striver's A2Z DSA Sheet" });
+      if (!hasSheet) {
+        await Resource.create({
+          title: "Striver's A2Z DSA Sheet",
+          description: "Official Strivers A2Z DSA Coding Practice Sheet covering essential problem solutions.",
+          category: "DSA",
+          resourceType: "Website",
+          resourceLink: "https://takeuforward.org/dsa/strivers-a2z-sheet-learn-dsa-a-to-z",
+          difficultyLevel: "Intermediate",
+        });
+      }
     }
 
     const resources = await Resource.find({}).sort({ createdAt: -1 });

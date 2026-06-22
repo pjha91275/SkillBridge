@@ -22,6 +22,11 @@ const ROLE_SKILLS: Record<string, string[]> = {
   'Full Stack Developer': ['React', 'Node.js', 'MongoDB', 'DBMS', 'SQL', 'Git', 'Tailwind CSS'],
   'Software Engineer': ['Data Structures', 'Algorithms', 'DBMS', 'Java', 'Python', 'System Design', 'Git'],
   'Data Analyst': ['Python', 'SQL', 'Excel', 'Tableau', 'Statistics', 'Pandas', 'Git'],
+  'Machine Learning Engineer': ['Python', 'Machine Learning', 'Deep Learning', 'SQL', 'Statistics', 'Git'],
+  'DevOps Engineer': ['Docker', 'Kubernetes', 'CI/CD', 'Linux', 'AWS', 'Git', 'Shell Scripting'],
+  'Cloud Architect': ['AWS', 'Cloud Computing', 'System Design', 'Networking', 'Security', 'Git'],
+  'Cybersecurity Analyst': ['Networking', 'Linux', 'Security', 'Python', 'Cryptography', 'Penetration Testing'],
+  'Mobile Developer': ['React Native', 'Swift', 'Kotlin', 'JavaScript', 'Git'],
 };
 
 export default async function AdminDashboardPage() {
