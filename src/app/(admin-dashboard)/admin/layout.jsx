@@ -34,7 +34,7 @@ export default async function AdminLayout({ children }) {
                   alt="SkillBridge Logo"
                   width={36}
                   height={36}
-                  className="object-cover"
+                  className="object-contain p-0.5"
                 />
               </div>
               <div className="flex flex-col">

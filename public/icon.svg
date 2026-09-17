@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Brand Hero Gradients -->
+    <linearGradient id="sbVioletSky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <linearGradient id="sbLeftPylon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="50%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#4f46e5" />
+    </linearGradient>
+
+    <linearGradient id="sbRightPylon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#4338ca" />
+    </linearGradient>
+
+    <linearGradient id="sbCapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="45%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <linearGradient id="sbDeckGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9333ea" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+  </defs>
+
+  <!-- 1. Bridge Suspension Cables (Backstays) -->
+  <path d="M 24 445 L 115 152" stroke="#6366f1" stroke-width="14" stroke-linecap="round" />
+  <path d="M 488 445 L 397 152" stroke="#6366f1" stroke-width="14" stroke-linecap="round" />
+
+  <!-- 2. Twin Suspension Bridge Towers (Campus & Career Pylons) -->
+  <!-- Left Tower -->
+  <polygon points="46,450 92,148 138,148 148,450" fill="url(#sbLeftPylon)" />
+  <rect x="96" y="180" width="34" height="42" rx="4" fill="#0b0f19" opacity="0.65" />
+  <rect x="91" y="250" width="44" height="52" rx="5" fill="#0b0f19" opacity="0.65" />
+  <rect x="86" y="330" width="54" height="62" rx="6" fill="#0b0f19" opacity="0.65" />
+
+  <!-- Right Tower -->
+  <polygon points="364,450 374,148 420,148 466,450" fill="url(#sbRightPylon)" />
+  <rect x="382" y="180" width="34" height="42" rx="4" fill="#0b0f19" opacity="0.65" />
+  <rect x="377" y="250" width="44" height="52" rx="5" fill="#0b0f19" opacity="0.65" />
+  <rect x="372" y="330" width="54" height="62" rx="6" fill="#0b0f19" opacity="0.65" />
+
+  <!-- 3. Vertical Skill Milestone Bars (Tiered Learning Progression) -->
+  <line x1="190" y1="275" x2="190" y2="430" stroke="#a855f7" stroke-width="14" stroke-linecap="round" />
+  <circle cx="190" cy="275" r="7" fill="#ffffff" />
+
+  <line x1="234" y1="308" x2="234" y2="430" stroke="#c084fc" stroke-width="16" stroke-linecap="round" />
+  <circle cx="234" cy="308" r="8" fill="#ffffff" />
+
+  <line x1="278" y1="308" x2="278" y2="430" stroke="#818cf8" stroke-width="16" stroke-linecap="round" />
+  <circle cx="278" cy="308" r="8" fill="#ffffff" />
+
+  <line x1="322" y1="275" x2="322" y2="430" stroke="#38bdf8" stroke-width="14" stroke-linecap="round" />
+  <circle cx="322" cy="275" r="7" fill="#ffffff" />
+
+  <!-- 4. Center Suspension Cable (Swooping Arch) -->
+  <path d="M 115 152 Q 180 320 256 320 Q 332 320 397 152" fill="none" stroke="url(#sbVioletSky)" stroke-width="18" stroke-linecap="round" />
+  <path d="M 115 148 Q 180 314 256 314 Q 332 314 397 148" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
+
+  <!-- 5. Bridge Roadway (Deck) -->
+  <rect x="20" y="430" width="472" height="26" rx="13" fill="url(#sbDeckGrad)" />
+  <line x1="36" y1="443" x2="476" y2="443" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.9" />
+
+  <!-- 6. Student Graduation Mortarboard (Skill Hallmark at Apex) -->
+  <!-- Skullcap Base -->
+  <path d="M 178 126 C 178 172 334 172 334 126 Z" fill="#3730a3" />
+
+  <!-- Diamond Top Cap -->
+  <polygon points="256,30 416,96 256,162 96,96" fill="url(#sbCapGrad)" stroke="#ffffff" stroke-width="8" stroke-linejoin="round" />
+
+  <!-- Mortarboard Center Button -->
+  <circle cx="256" cy="96" r="11" fill="#ffffff" />
+
+  <!-- Mortarboard Hanging Tassel -->
+  <path d="M 256 96 Q 345 104 405 130 Q 418 150 416 178" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" />
+  <circle cx="416" cy="182" r="9" fill="#67e8f9" />
+
+  <!-- 7. Career North Star Beacon (Pure White Achievement Star) -->
+  <path d="M 256 68 L 263 88 L 284 96 L 263 104 L 256 124 L 249 104 L 228 96 L 249 88 Z" fill="#ffffff" />
+</svg>

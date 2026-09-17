@@ -19,6 +19,7 @@ export const metadata = {
     "A professional network connecting college students to bridge the gap between academic paths and real-world career building.",
   icons: {
     icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
       { url: "/favicon.ico", sizes: "any" },
       { url: "/icon.png", type: "image/png", sizes: "512x512" },
     ],

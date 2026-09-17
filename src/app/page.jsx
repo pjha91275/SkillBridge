@@ -274,7 +274,7 @@ export default async function Home() {
                   alt="SkillBridge Logo"
                   width={32}
                   height={32}
-                  className="object-cover"
+                  className="object-contain p-0.5"
                 />
               </div>
               <span className="font-bold text-lg text-white">SkillBridge</span>

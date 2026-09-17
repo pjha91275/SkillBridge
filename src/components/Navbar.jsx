@@ -30,7 +30,7 @@ export default function Navbar() {
                   alt="SkillBridge Logo"
                   width={40}
                   height={40}
-                  className="object-cover"
+                  className="object-contain p-0.5"
                   priority
                 />
               </div>

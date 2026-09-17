@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./public/logo.png" alt="SkillBridge Official Logo" width="150" />
+<img src="./public/logo.png" alt="SkillBridge Official Logo" width="480" />
 
 # SkillBridge 🚀
 
