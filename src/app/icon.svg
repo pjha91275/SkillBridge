@@ -1,89 +1,130 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" fill="none">
   <defs>
-    <!-- Brand Hero Gradients -->
-    <linearGradient id="sbVioletSky" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="sbBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#a855f7" />
       <stop offset="50%" stop-color="#6366f1" />
       <stop offset="100%" stop-color="#38bdf8" />
     </linearGradient>
 
-    <linearGradient id="sbLeftPylon" x1="0%" y1="0%" x2="0%" y2="100%">
+    <linearGradient id="sbBridgeCurve" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9333ea" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+
+    <linearGradient id="sbPoleLeft" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#c084fc" />
       <stop offset="50%" stop-color="#8b5cf6" />
       <stop offset="100%" stop-color="#4f46e5" />
     </linearGradient>
 
-    <linearGradient id="sbRightPylon" x1="0%" y1="0%" x2="0%" y2="100%">
+    <linearGradient id="sbPoleRight" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#38bdf8" />
       <stop offset="50%" stop-color="#6366f1" />
-      <stop offset="100%" stop-color="#4338ca" />
+      <stop offset="100%" stop-color="#312e81" />
     </linearGradient>
 
-    <linearGradient id="sbCapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#c084fc" />
-      <stop offset="45%" stop-color="#818cf8" />
-      <stop offset="100%" stop-color="#38bdf8" />
-    </linearGradient>
-
-    <linearGradient id="sbDeckGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#9333ea" />
+    <linearGradient id="sbWaterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
       <stop offset="50%" stop-color="#6366f1" />
-      <stop offset="100%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#38bdf8" />
     </linearGradient>
   </defs>
 
-  <!-- 1. Bridge Suspension Cables (Backstays) -->
-  <path d="M 24 445 L 115 152" stroke="#6366f1" stroke-width="14" stroke-linecap="round" />
-  <path d="M 488 445 L 397 152" stroke="#6366f1" stroke-width="14" stroke-linecap="round" />
+  <!-- ================= 1. WATER AT BASE ================= -->
+  <path d="M 12 492 Q 60 484 110 492 T 210 492 T 310 492 T 410 492 T 500 492" fill="none" stroke="url(#sbWaterGrad)" stroke-width="6" stroke-linecap="round" opacity="0.85" />
+  <path d="M 30 504 Q 80 496 130 504 T 230 504 T 330 504 T 430 504 T 485 504" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" opacity="0.5" />
 
-  <!-- 2. Twin Suspension Bridge Towers (Campus & Career Pylons) -->
-  <!-- Left Tower -->
-  <polygon points="46,450 92,148 138,148 148,450" fill="url(#sbLeftPylon)" />
-  <rect x="96" y="180" width="34" height="42" rx="4" fill="#0b0f19" opacity="0.65" />
-  <rect x="91" y="250" width="44" height="52" rx="5" fill="#0b0f19" opacity="0.65" />
-  <rect x="86" y="330" width="54" height="62" rx="6" fill="#0b0f19" opacity="0.65" />
+  <!-- ================= 2. BRIDGE POLES / SUPPORT PILLARS ================= -->
+  <!-- Under-Deck Foundation Poles (Anchored in water) -->
+  <line x1="145" y1="365" x2="145" y2="488" stroke="#8b5cf6" stroke-width="12" stroke-linecap="round" />
+  <rect x="136" y="476" width="18" height="14" rx="3" fill="#6366f1" />
 
-  <!-- Right Tower -->
-  <polygon points="364,450 374,148 420,148 466,450" fill="url(#sbRightPylon)" />
-  <rect x="382" y="180" width="34" height="42" rx="4" fill="#0b0f19" opacity="0.65" />
-  <rect x="377" y="250" width="44" height="52" rx="5" fill="#0b0f19" opacity="0.65" />
-  <rect x="372" y="330" width="54" height="62" rx="6" fill="#0b0f19" opacity="0.65" />
+  <line x1="200" y1="340" x2="200" y2="488" stroke="#818cf8" stroke-width="12" stroke-linecap="round" />
+  <rect x="191" y="476" width="18" height="14" rx="3" fill="#6366f1" />
 
-  <!-- 3. Vertical Skill Milestone Bars (Tiered Learning Progression) -->
-  <line x1="190" y1="275" x2="190" y2="430" stroke="#a855f7" stroke-width="14" stroke-linecap="round" />
-  <circle cx="190" cy="275" r="7" fill="#ffffff" />
+  <!-- Center Bridge Pole (Directly under monitor apex) -->
+  <line x1="256" y1="330" x2="256" y2="488" stroke="#6366f1" stroke-width="14" stroke-linecap="round" />
+  <rect x="246" y="476" width="20" height="14" rx="3" fill="#4f46e5" />
 
-  <line x1="234" y1="308" x2="234" y2="430" stroke="#c084fc" stroke-width="16" stroke-linecap="round" />
-  <circle cx="234" cy="308" r="8" fill="#ffffff" />
+  <line x1="312" y1="340" x2="312" y2="488" stroke="#818cf8" stroke-width="12" stroke-linecap="round" />
+  <rect x="303" y="476" width="18" height="14" rx="3" fill="#38bdf8" />
 
-  <line x1="278" y1="308" x2="278" y2="430" stroke="#818cf8" stroke-width="16" stroke-linecap="round" />
-  <circle cx="278" cy="308" r="8" fill="#ffffff" />
+  <line x1="367" y1="365" x2="367" y2="488" stroke="#38bdf8" stroke-width="12" stroke-linecap="round" />
+  <rect x="358" y="476" width="18" height="14" rx="3" fill="#38bdf8" />
 
-  <line x1="322" y1="275" x2="322" y2="430" stroke="#38bdf8" stroke-width="14" stroke-linecap="round" />
-  <circle cx="322" cy="275" r="7" fill="#ffffff" />
+  <!-- Main Left Bridge Tower Pole (Extends from water Y=490, through deck, rising tall to Y=175) -->
+  <polygon points="76,490 80,175 94,175 98,490" fill="url(#sbPoleLeft)" />
+  <circle cx="87" cy="170" r="8" fill="#ffffff" />
+  <circle cx="87" cy="170" r="14" fill="#a855f7" opacity="0.4" />
+  <!-- Left pole stay cables connecting to curved deck -->
+  <line x1="87" y1="178" x2="30" y2="435" stroke="#a855f7" stroke-width="4.5" stroke-linecap="round" />
+  <line x1="87" y1="195" x2="145" y2="370" stroke="#818cf8" stroke-width="4.5" stroke-linecap="round" />
 
-  <!-- 4. Center Suspension Cable (Swooping Arch) -->
-  <path d="M 115 152 Q 180 320 256 320 Q 332 320 397 152" fill="none" stroke="url(#sbVioletSky)" stroke-width="18" stroke-linecap="round" />
-  <path d="M 115 148 Q 180 314 256 314 Q 332 314 397 148" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
+  <!-- Main Right Bridge Tower Pole (Extends from water Y=490, through deck, rising tall to Y=175) -->
+  <polygon points="414,490 418,175 432,175 436,490" fill="url(#sbPoleRight)" />
+  <circle cx="425" cy="170" r="8" fill="#ffffff" />
+  <circle cx="425" cy="170" r="14" fill="#38bdf8" opacity="0.4" />
+  <!-- Right pole stay cables connecting to curved deck -->
+  <line x1="425" y1="178" x2="482" y2="435" stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round" />
+  <line x1="425" y1="195" x2="367" y2="370" stroke="#818cf8" stroke-width="4.5" stroke-linecap="round" />
 
-  <!-- 5. Bridge Roadway (Deck) -->
-  <rect x="20" y="430" width="472" height="26" rx="13" fill="url(#sbDeckGrad)" />
-  <line x1="36" y1="443" x2="476" y2="443" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.9" />
+  <!-- Shore Abutments -->
+  <polygon points="12,490 12,440 45,430 45,490" fill="#4338ca" />
+  <polygon points="467,430 500,440 500,490 467,490" fill="#312e81" />
 
-  <!-- 6. Student Graduation Mortarboard (Skill Hallmark at Apex) -->
-  <!-- Skullcap Base -->
-  <path d="M 178 126 C 178 172 334 172 334 126 Z" fill="#3730a3" />
+  <!-- ================= 3. LONG CURVED BRIDGE ROADWAY ================= -->
+  <!-- Long Curved Bridge Deck -->
+  <path d="M 12 445 Q 256 325 500 445" fill="none" stroke="url(#sbBridgeCurve)" stroke-width="22" stroke-linecap="round" />
+  <path d="M 24 445 Q 256 325 488 445" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.95" />
 
-  <!-- Diamond Top Cap -->
-  <polygon points="256,30 416,96 256,162 96,96" fill="url(#sbCapGrad)" stroke="#ffffff" stroke-width="8" stroke-linejoin="round" />
+  <!-- Curved Bridge Guardrail & Posts -->
+  <path d="M 12 425 Q 256 305 500 425" fill="none" stroke="url(#sbBridgeCurve)" stroke-width="5" stroke-linecap="round" />
+  <line x1="30" y1="426" x2="30" y2="444" stroke="#a855f7" stroke-width="4" />
+  <line x1="60" y1="410" x2="60" y2="428" stroke="#a855f7" stroke-width="4" />
+  <line x1="116" y1="382" x2="116" y2="400" stroke="#818cf8" stroke-width="4" />
+  <line x1="146" y1="368" x2="146" y2="386" stroke="#6366f1" stroke-width="4" />
+  <line x1="366" y1="368" x2="366" y2="386" stroke="#6366f1" stroke-width="4" />
+  <line x1="396" y1="382" x2="396" y2="400" stroke="#38bdf8" stroke-width="4" />
+  <line x1="452" y1="410" x2="452" y2="428" stroke="#0ea5e9" stroke-width="4" />
+  <line x1="482" y1="426" x2="482" y2="444" stroke="#0ea5e9" stroke-width="4" />
 
-  <!-- Mortarboard Center Button -->
-  <circle cx="256" cy="96" r="11" fill="#ffffff" />
+  <!-- ================= 4. COMPUTER MONITOR AT APEX BETWEEN POLES ================= -->
+  <!-- Monitor Stand Base & Stem (Resting at Apex X=256, Y=330) -->
+  <rect x="238" y="260" width="36" height="60" rx="5" fill="#4338ca" />
+  <ellipse cx="256" cy="320" rx="52" ry="8" fill="#38bdf8" />
 
-  <!-- Mortarboard Hanging Tassel -->
-  <path d="M 256 96 Q 345 104 405 130 Q 418 150 416 178" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" />
-  <circle cx="416" cy="182" r="9" fill="#67e8f9" />
+  <!-- Monitor Bezel Frame -->
+  <rect x="106" y="24" width="300" height="236" rx="18" fill="#0f172a" stroke="url(#sbBorderGrad)" stroke-width="8" />
 
-  <!-- 7. Career North Star Beacon (Pure White Achievement Star) -->
-  <path d="M 256 68 L 263 88 L 284 96 L 263 104 L 256 124 L 249 104 L 228 96 L 249 88 Z" fill="#ffffff" />
+  <!-- Inner Screen Display -->
+  <rect x="120" y="38" width="272" height="208" rx="10" fill="#090d16" />
+
+  <!-- Screen Top Control Bar -->
+  <line x1="120" y1="66" x2="392" y2="66" stroke="#1f2937" stroke-width="2" />
+  <circle cx="138" cy="52" r="4.5" fill="#ef4444" />
+  <circle cx="152" cy="52" r="4.5" fill="#f59e0b" />
+  <circle cx="166" cy="52" r="4.5" fill="#10b981" />
+
+  <!-- ================= 5. SKILL EMBLEM (Gear + Code Brackets) ================= -->
+  <circle cx="256" cy="148" r="64" fill="#1e1b4b" stroke="url(#sbBorderGrad)" stroke-width="4" />
+
+  <!-- Technical Skill Gear (Orange/Amber) -->
+  <g fill="#f59e0b" opacity="0.95">
+    <rect x="249" y="92" width="14" height="112" rx="3.5" />
+    <rect x="249" y="92" width="14" height="112" rx="3.5" transform="rotate(30 256 148)" />
+    <rect x="249" y="92" width="14" height="112" rx="3.5" transform="rotate(60 256 148)" />
+    <rect x="249" y="92" width="14" height="112" rx="3.5" transform="rotate(90 256 148)" />
+    <rect x="249" y="92" width="14" height="112" rx="3.5" transform="rotate(120 256 148)" />
+    <rect x="249" y="92" width="14" height="112" rx="3.5" transform="rotate(150 256 148)" />
+  </g>
+  <circle cx="256" cy="148" r="46" fill="#1e1b4b" stroke="#f59e0b" stroke-width="3.5" />
+
+  <!-- Code Brackets < / > (Pure White & Cyan) -->
+  <path d="M 238 131 L 220 148 L 238 165" fill="none" stroke="#ffffff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 274 131 L 292 148 L 274 165" fill="none" stroke="#38bdf8" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+  <line x1="262" y1="127" x2="250" y2="169" stroke="#c084fc" stroke-width="5" stroke-linecap="round" />
+
+  <!-- Achievement Star -->
+  <path d="M 256 42 L 259 50 L 268 53 L 259 56 L 256 64 L 253 56 L 244 53 L 253 50 Z" fill="#ffffff" />
 </svg>
