@@ -17,6 +17,13 @@ export const metadata = {
   title: "SkillBridge | Connect & Grow with Peer Skills",
   description:
     "A professional network connecting college students to bridge the gap between academic paths and real-world career building.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({ children }) {

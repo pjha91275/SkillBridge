@@ -1,3 +1,7 @@
+<div align="center">
+
+<img src="./public/logo.png" alt="SkillBridge Official Logo" width="150" />
+
 # SkillBridge 🚀
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.2.9-black?style=flat-square&logo=next.js)](https://nextjs.org/)
@@ -9,8 +13,10 @@
 [![NextAuth](https://img.shields.io/badge/NextAuth.js-v4.24-green?style=flat-square&logo=next.js)](https://next-auth.js.org/)
 [![Recharts](https://img.shields.io/badge/Recharts-v3.8-22b5bf?style=flat-square)](https://recharts.org/)
 
+</div>
+
 > **SkillBridge** is a modern, full-stack campus career acceleration and placement readiness platform for college students. It bridges academic learning and recruitment benchmarks through placement scoring, competitive programming tracking, automated resume parsing & ATS evaluation, role roadmaps, and peer hackathon matching.
-🌐 **Hosted Deployment**: [https://skillbridge.vercel.app](https://skillbridge.vercel.app) • 📦 **Repository**: [https://github.com/pjha91275/SkillBridge](https://github.com/pjha91275/SkillBridge)
+🌐 **Hosted Deployment**: [https://skillbridgehq.vercel.app](https://skillbridgehq.vercel.app) • 📦 **Repository**: [https://github.com/pjha91275/SkillBridge](https://github.com/pjha91275/SkillBridge)
 
 ---
 
@@ -95,7 +101,7 @@ graph TD
 - **Weekly Goal Tracker**: Productivity manager featuring an interactive **Kanban Board** (*Pending*, *In Progress*, *Completed*) and categorized **List View** with priority and deadline controls.
 
 ### 2. Competitive Programming & DSA Tracker
-- **Multi-Platform Metric Tracking**: Synchronizes achievements across **LeetCode, CodeChef, Codeforces, HackerRank, and GeeksforGeeks** (ratings, badges, global ranks, stars).
+- **Multi-Platform Metric Tracking**: Profile tracking for user-logged achievements across **LeetCode, CodeChef, Codeforces, HackerRank, GeeksforGeeks** (ratings, badges, global ranks, stars).
 - **19 Algorithmic Topics**: Topic mastery tracking across Arrays, Strings, Searching, Sorting, Recursion, Backtracking, Linked Lists, Stacks, Queues, Hashing, Trees, BST, Heaps, Graphs, Greedy, DP, Tries, Segment Trees, and Bit Manipulation.
 - **Problem Log & Revision Queue**: Problem logger with difficulty tiers (*Easy*, *Medium*, *Hard*), platform tags, problem URLs, status, and a **"Revision Needed"** toggle.
 - **Streak & Tier Calibration**: Tracks current streaks, record streaks, and target company tier benchmarks (*Tier 1*, *Tier 2*, *Tier 3*).

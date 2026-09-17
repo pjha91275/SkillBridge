@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Users,
@@ -9,7 +10,6 @@ import {
   MessageSquareCode,
   ArrowRight,
   Code,
-  Share2,
 } from "lucide-react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -267,9 +267,15 @@ export default async function Home() {
       <footer className="border-t border-border/10 bg-black/40 py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-border/5 pb-8">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md">
-                <Share2 className="h-4 w-4" />
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="relative flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden shadow-md border border-white/10 shrink-0">
+                <Image
+                  src="/icon.png"
+                  alt="SkillBridge Logo"
+                  width={32}
+                  height={32}
+                  className="object-cover"
+                />
               </div>
               <span className="font-bold text-lg text-white">SkillBridge</span>
             </Link>

@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Share2, LogOut, User as UserIcon } from 'lucide-react';
+import { Menu, X, LogOut, User as UserIcon } from 'lucide-react';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -22,9 +23,16 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-lg transition-transform group-hover:scale-105">
-                <Share2 className="h-5 w-5" />
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-indigo-500/20 transition-transform group-hover:scale-105 border border-white/10">
+                <Image
+                  src="/icon.png"
+                  alt="SkillBridge Logo"
+                  width={40}
+                  height={40}
+                  className="object-cover"
+                  priority
+                />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
                 SkillBridge

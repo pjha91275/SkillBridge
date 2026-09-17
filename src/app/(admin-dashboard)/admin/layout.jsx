@@ -1,9 +1,9 @@
 import React from "react";
+import Image from "next/image";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import SidebarLink from "./SidebarLink";
-import { Share2 } from "lucide-react";
 
 export default async function AdminLayout({ children }) {
   const session = await getServerSession(authOptions);
@@ -27,9 +27,15 @@ export default async function AdminLayout({ children }) {
         <div className="flex flex-col h-full py-8 justify-between px-4">
           <div className="space-y-6">
             {/* Admin Header Title */}
-            <div className="px-4 flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md">
-                <Share2 className="h-4.5 w-4.5" />
+            <div className="px-4 flex items-center gap-2.5">
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl overflow-hidden shadow-md border border-white/10 shrink-0">
+                <Image
+                  src="/icon.png"
+                  alt="SkillBridge Logo"
+                  width={36}
+                  height={36}
+                  className="object-cover"
+                />
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-sm text-white leading-none">
